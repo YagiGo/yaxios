@@ -18,17 +18,19 @@ function setContentTypeIfUnset(headers, value) {
 
 //获取默认的适配器
 function getDefaultAdapter() {
-    var adapter;
-    if (typeof XMLHttpRequest !== 'undefined') {
-        // For browsers use XHR adapter
-        //引入用于发送 AJAX 请求的适配器
-        adapter = require('./adapters/xhr');
-    } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
-        // For node use HTTP adapter
-        //引入用于在 Node 端发送HTTP请求的适配器
-        adapter = require('./adapters/http');
-    }
-    return adapter;
+    // var adapter;
+    // if (typeof XMLHttpRequest !== 'undefined') {
+    //     // For browsers use XHR adapter
+    //     //引入用于发送 AJAX 请求的适配器
+    //     adapter = require('./adapters/xhr');
+    // } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    //     // For node use HTTP adapter
+    //     //引入用于在 Node 端发送HTTP请求的适配器
+    //     adapter = require('./adapters/http');
+    // }
+    // return adapter;
+    // yaxios only supports xhr
+    return require('./lib/adapters/xhr');
 }
 
 //默认的配置项
@@ -80,9 +82,10 @@ var defaults = {
      */
     timeout: 0,
 
-    //防止攻击的检测字符串
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
+    // For the sake of simplicity, yaxios does not support xsrf check
+    // //防止攻击的检测字符串
+    // xsrfCookieName: 'XSRF-TOKEN',
+    // xsrfHeaderName: 'X-XSRF-TOKEN',
 
     maxContentLength: -1,
     //请求为成功的条件

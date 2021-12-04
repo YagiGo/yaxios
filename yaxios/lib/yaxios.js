@@ -19,4 +19,15 @@ const createInstance = (defaultConfig) => {
     // instance.get, instance.post, instance.delete, e.t.c
     utils.extend(instance, Yaxios.prototype, context);
     utils.extend(instance, context);
+    return instance;
 }
+
+// create the default instance to be exported
+const yaxios = createInstance(defaults);
+// expose yaxios class
+yaxios.Yaxios = Yaxios;
+// factory for creating instance
+yaxios.create = (instanceConfig) => {createInstance(instanceConfig)}
+
+module.exports = yaxios;
+module.exports.default = yaxios;

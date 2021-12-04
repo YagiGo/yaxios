@@ -3,14 +3,14 @@
 // Import tools (I use tools from axios)
 let utils = require('../../utils')
 const mergeConfig = require("./mergeConfig");
-const buildURL = require("../helpers/buildURL");
+const dispatchRequest = require("./dispatchRequest");
 
 
 /**
  * create a new instance of Yaxios
  * @param {Object} instanceConfig The default config for the instance
  */
-const Yaxios = (instanceConfig) => {
+function Yaxios(instanceConfig){
     // Add default config
     this.defaults = instanceConfig;
     // Add interceptors
@@ -25,7 +25,7 @@ const Yaxios = (instanceConfig) => {
  * Dispatch a request
  * @param {Object} config The config specific for this request, which is merged with this.defaults
  */
-Yaxios.prototype.request = (config) => {
+Yaxios.prototype.request = function request(config) {
     if (typeof config === 'string') {
         config = arguments[1] || {};
         config.url = arguments[0];
@@ -45,17 +45,23 @@ Yaxios.prototype.request = (config) => {
         config.method = 'get';
     }
     // create a promise
+    let chain = [dispatchRequest, undefined];
     let promise = Promise.resolve(config);//  promise 成功的Promise
 
     //TODO: Hook up interceptors
 
-    return promise
-}
+    // If the chain is not empty 0
+    while (chain.length) {
+        //start executing all function in the chain
+        // note that dispatchRequest is always the first to execute
+        // if dispatchRequest failed, others functions do not get to execute at all
+        // as it return a rejected promise instance with error message
+        promise = promise.then(chain.shift(), chain.shift());
+    }
 
-Yaxios.prototype.getUri = (config) => {
-    config = mergeConfig(this.defaults, config);
-    return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
-};
+    return promise;
+
+}
 
 // Provide aliases for supported request methods  axios.get  axios.post axios.put
 utils.forEach(['delete', 'get', 'head', 'options'], (method) => {

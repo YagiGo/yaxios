@@ -1,7 +1,7 @@
 'use strict';
 // 构建完整 URL 的函数文件
-var isAbsoluteURL = require('../helpers/isAbsoluteURL');
-var combineURLs = require('../helpers/combineURLs');
+let isAbsoluteURL = require('../helpers/isAbsoluteURL');
+let combineURLs = require('../helpers/combineURLs');
 
 /**
  * Creates a new URL by combining the baseURL with the requestedURL,

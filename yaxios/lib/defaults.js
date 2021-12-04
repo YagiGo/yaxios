@@ -18,17 +18,7 @@ function setContentTypeIfUnset(headers, value) {
 
 //获取默认的适配器
 function getDefaultAdapter() {
-    var adapter;
-    if (typeof XMLHttpRequest !== 'undefined') {
-        // For browsers use XHR adapter
-        //引入用于发送 AJAX 请求的适配器
-        adapter = require('./adapters/xhr');
-    } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
-        // For node use HTTP adapter
-        //引入用于在 Node 端发送HTTP请求的适配器
-        adapter = require('./adapters/http');
-    }
-    return adapter;
+    return require('./adapters/xhr');
 }
 
 //默认的配置项

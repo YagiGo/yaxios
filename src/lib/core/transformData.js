@@ -1,7 +1,7 @@
 'use strict';
 // 数据格式转化函数
 //引入工具
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 
 /**
  * Transform the data for a request or a response

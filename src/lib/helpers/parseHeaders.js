@@ -1,6 +1,6 @@
 'use strict';
 // 暴露解析头信息的函数
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers

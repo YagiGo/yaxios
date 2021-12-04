@@ -5,7 +5,6 @@ var utils = require('../../../yaxios/utils');
 /**
  * Config-specific merge-function which creates a new config-object
  * by merging two configuration objects together.
- * 合并两个配置对象的数据, 并返回一个新的对象
  * @param {Object} config1
  * @param {Object} config2
  * @returns {Object} New object resulting from merging config2 to config1

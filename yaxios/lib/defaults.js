@@ -3,7 +3,7 @@
 //引入工具
 var utils = require('../../yaxios/utils');
 //引入统一化头信息的工具函数
-var normalizeHeaderName = require('../../yaxios/helper/normalizeHeaderName');
+var normalizeHeaderName = require('../helper/normalizeHeaderName');
 //声明默认的请求体类型
 var DEFAULT_CONTENT_TYPE = {
     'Content-Type': 'application/x-www-form-urlencoded'

@@ -2,7 +2,7 @@
 //发送请求的函数文件
 
 //引入工具
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 //引入数据转化工具
 var transformData = require('./transformData');
 //引入检测是否为取消对象的函数

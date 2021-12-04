@@ -1,6 +1,6 @@
 'use strict';
 //nodeJS 端发送 HTTP 请求实现
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 var settle = require('./../core/settle');
 var buildFullPath = require('../core/buildFullPath');
 var buildURL = require('./../helpers/buildURL');

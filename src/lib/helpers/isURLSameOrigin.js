@@ -1,6 +1,6 @@
 'use strict';
 // 检测是否为同源的 URL
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 
 module.exports = (
   utils.isStandardBrowserEnv() ?

@@ -2,7 +2,7 @@
 //Axios 构造函数文件
 
 //引入工具
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 //引入构建 URL 工具
 var buildURL = require('../helpers/buildURL');
 //引入拦截器管理构造函数

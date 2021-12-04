@@ -1,6 +1,6 @@
 'use strict';
 //浏览器端发送 AJAX 请求实现
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 var settle = require('./../core/settle');
 var buildURL = require('./../helpers/buildURL');
 var buildFullPath = require('../core/buildFullPath');

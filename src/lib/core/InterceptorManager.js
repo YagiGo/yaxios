@@ -1,6 +1,6 @@
 'use strict';
 // 拦截器管理器构造函数
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 
 //声明构造函数  
 //axios.interceptors.request.use

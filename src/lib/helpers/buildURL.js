@@ -1,6 +1,6 @@
 'use strict';
 //引入工具
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 //对数据进行编码
 function encode(val) {
   return encodeURIComponent(val).

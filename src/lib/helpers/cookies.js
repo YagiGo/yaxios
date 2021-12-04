@@ -1,6 +1,6 @@
 'use strict';
 // 暴露 cookie 处理的函数
-var utils = require('./../utils');
+var utils = require('../../../yaxios/utils');
 
 module.exports = (
   utils.isStandardBrowserEnv() ?

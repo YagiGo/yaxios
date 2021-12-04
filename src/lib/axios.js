@@ -1,7 +1,7 @@
 'use strict';
 // axios 入口文件
 //引入工具
-var utils = require('./utils');
+var utils = require('../../yaxios/utils');
 //引入绑定函数  创建函数
 var bind = require('./helpers/bind');// 创建函数的
 //引入 Axios 主文件

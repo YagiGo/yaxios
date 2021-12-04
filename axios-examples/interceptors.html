@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interceptors</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link crossorigin="anonymous" href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>>
+<body>
+<div class="container">
+    <button class="btn btn-primary">GET</button>
+</div>
+<script>
+    // Set basic defaults here
+    axios.defaults.baseURL = 'http://localhost:3000'
+
+    // Add a request interceptor
+    axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        console.log('req interceptors:', config);
+        // you can alter the config her
+        //e.g
+        config.params = {a: 100}
+        return config;
+    }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+    });
+
+    // Add a response interceptor
+    axios.interceptors.response.use((response) => {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        console.log('res interceptors:', response);
+        // you can modify the response here
+        // e.g only return the payload
+        return response.data;
+    }, (error) => {
+        console.log('response interceptor failed')
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
+    });
+
+    const btns = document.getElementsByClassName('btn');
+    btns[0].onclick = () => {
+        axios({
+            method: 'GET',
+            url: '/posts/1',
+        }).then((response) => {
+            console.log(response);
+        }).catch((err) => {
+            console.log('something went wrong here');
+        })
+    }
+</script>
+
+</body>
+</html>

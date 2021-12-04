@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Usage of Axios</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link crossorigin="anonymous" href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>>
+<body>
+    <div class="container">
+        <h2>Basic Request</h2>
+        <button class="btn btn-primary">GET</button>
+        <button class="btn btn-warning">POST</button>
+        <button class="btn btn-success">PUT</button>
+        <button class="btn btn-danger">DELETE</button>
+        <h2>Sending with request</h2>
+        <button class="btn btn-primary">GET</button>
+        <button class="btn btn-warning">POST</button>
+    </div>
+    <script>
+        // Set basic defaults here
+        axios.defaults.baseURL = 'http://localhost:3000'
+        // axios basic usage here
+        const btns = document.getElementsByClassName('btn');
+        btns[0].onclick = () => {
+            axios({
+                method: 'GET',
+                url: '/posts/1',
+            }).then((response) => {
+                console.log(response);
+            })
+        }
+        btns[1].onclick = () => {
+            axios({
+                method: 'POST',
+                url: '/posts',
+                data: {
+                    title: "new post",
+                    author: "yagi"
+                }
+            }).then((res) => {
+                console.log(res);
+            })
+
+        }
+        btns[2].onclick = () => {
+            axios({
+                method: 'PUT',
+                url: '/posts/3',
+                data: {
+                    title: `new post${Date.now().toString()}`,
+                }
+            }).then((res) => {
+                console.log(res);
+            })
+        }
+        btns[3].onclick = () => {
+            axios({
+                method: 'DELTETE',
+                url: '/posts/1'
+            }).then((res) => {
+                console.log(res);
+            })
+        }
+        // btns[4].onclick = () => {
+        //     axios.request({
+        //         method: 'GET',
+        //         url: '/posts'
+        //     }).then((res) => {
+        //         console.log(res);
+        //     })
+        // }
+        //
+        // btns[5].onclick = () => {
+        //     axios.post(
+        //         '/posts',
+        //         {
+        //             title: 'post send with post method',
+        //             author: 'yagi'
+        //         }).then((res) => {
+        //             console.log(res);
+        //     })
+        // }
+        // create instance
+        const jokes = axios.create({
+            basedURL: '',
+            timeout: 2000
+        })
+        // this is basically a instance that is configured to our needs, can be used the same way
+        jokes({
+            url: '/getTangPoetry'
+        }).then((res) => {
+            console.log(res);
+        })
+        jokes.get('/getTangPoetry')
+        .then((res) => {
+            console.log(res)
+        })
+
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Usage of Axios</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <link crossorigin="anonymous" href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>>
+<body>
+  <div class="container">
+    <h2>Request Cancellation</h2>
+    <button class="btn btn-primary">GET</button>
+    <button class="btn btn-warning">Cancel GET</button>
+  </div>
+  <script>
+    // Set basic defaults here
+    axios.defaults.baseURL = 'http://localhost:3000'
+    // axios basic usage here
+    const btns = document.getElementsByClassName('btn');
+    let cancel = null;
+    btns[0].onclick = () => {
+      // check the previous req has finished or not
+      if(cancel !== null) {
+        alert('Wait a sec!');
+        return;
+      }
+      axios({
+        method: 'GET',
+        url: '/posts',
+        // add a cancel token
+        cancelToken: new axios.CancelToken((c) =>{
+          cancel = c
+        })
+      }).then((res) => {
+        console.log(res.data)
+        cancel = null; // reset the cancel when req is not cancelled
+      })
+    }
+
+    btns[1].onclick = () => {
+      cancel();
+    }
+  </script>
+</body>
+</html>

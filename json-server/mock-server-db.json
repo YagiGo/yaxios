@@ -1,0 +1,38 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    },
+    {
+      "title": "new post",
+      "author": "yagi",
+      "id": 2
+    },
+    {
+      "title": "new post1638605534591",
+      "id": 3
+    },
+    {
+      "title": "new post",
+      "author": "yagi",
+      "id": 4
+    },
+    {
+      "title": "post send with post method",
+      "author": "yagi",
+      "id": 5
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

@@ -1,22 +1,22 @@
-### How to create an axios instance from Axios
+### How to create an yaxios instance from Yaxios
 1. create a instance with default config using `createInstance`method.
-  - Create a new Axios instance with defaultConfig
-  - bind the Axios.prototype.request to this instance so that it can be uses as a function (instance = Axios.prototype.request)
-  - extend Axios.prototype to the instance, so that all methods from Axios.prototype can be used by 
+  - Create a new Yaxios instance with defaultConfig
+  - bind the Yaxios.prototype.request to this instance so that it can be uses as a function (instance = Yaxios.prototype.request)
+  - extend Yaxios.prototype to the instance, so that all methods from Yaxios.prototype can be used by 
 instance. Hence, instance.getUri, instance.post, instance.get, instance.delete e.t.c
   - extend contex to instance
 ```javascript
-// ./axios.js
+// ./yaxios.js
 // Create the default instance to be exported
 function createInstance(defaultConfig) {
     //创建一个实例对象 context
-    var context = new Axios(defaultConfig);// context 不能当函数使用
+    var context = new Yaxios(defaultConfig);// context 不能当函数使用
     // 将 request 方法的 this 指向 context 并返回新函数  instance 可以用作函数使用, 且返回的是一个 promise 对象
-    var instance = bind(Axios.prototype.request, context);// instance 与 Axios.prototype.request 代码一致
+    var instance = bind(Yaxios.prototype.request, context);// instance 与 Yaxios.prototype.request 代码一致
 
-    // Copy axios.prototype to instance
-    // 将 Axios.prototype 和实例对象的方法都添加到 instance 函数身上
-    utils.extend(instance, Axios.prototype, context);// instance.get instance.post ...
+    // Copy yaxios.prototype to instance
+    // 将 Yaxios.prototype 和实例对象的方法都添加到 instance 函数身上
+    utils.extend(instance, Yaxios.prototype, context);// instance.get instance.post ...
 
     // 将实例对象的方法和属性扩展到 instance 函数身上
     utils.extend(instance, context);
@@ -24,7 +24,7 @@ function createInstance(defaultConfig) {
     return instance;
 }
 /* ... */
-var axios = createInstance(defaults);
+var yaxios = createInstance(defaults);
 // the default above is import from ./defaults
 var defaults = require('./defaults');
 
@@ -32,12 +32,12 @@ var defaults = require('./defaults');
 2. Within the `createInstance` method, the default config from ./defaults.js
 is added as the instanceConfig. The interceptors are set up using `InterceptorManager`
 ```javascript
-// ./core/Axios.js
+// ./core/Yaxios.js
 /**
- * Create a new instance of Axios
+ * Create a new instance of Yaxios
  * @param {Object} instanceConfig The default config for the instance
  */
-function Axios(instanceConfig) {
+function Yaxios(instanceConfig) {
     //attach instanceConfig to the instance
     this.defaults = instanceConfig;
     // Create Interceptors with InterceptorManage method
@@ -47,21 +47,21 @@ function Axios(instanceConfig) {
     };
 }
 ```
-3. Common methods are added to the prototype of Axios so that it can be called
+3. Common methods are added to the prototype of Yaxios so that it can be called
 through the instance.
 ```javascript
-Axios.prototype.request = function request(config) {
+Yaxios.prototype.request = function request(config) {
     /* Set up request method */
 }
-Axios.prototype.getUri = function getUri(config) {
+Yaxios.prototype.getUri = function getUri(config) {
     /* Set up getUri method */
 }
 
 utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
     /*eslint func-names:0*/
     /* provide aliases for supported request methods that does not contain data */
-    /* so that you can use it as axios.get, axios.delet e.t.c */
-    Axios.prototype[method] = function (url, config) {
+    /* so that you can use it as yaxios.get, yaxios.delet e.t.c */
+    Yaxios.prototype[method] = function (url, config) {
         return this.request(utils.merge(config || {}, {
             method: method,
             url: url
@@ -71,8 +71,8 @@ utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData
 
 utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
     /* provide aliases for supported request methods that contain data */
-    /* so that you can use it as axios.post, axios.put, axios.patch with data */
-    Axios.prototype[method] = function (url, data, config) {
+    /* so that you can use it as yaxios.post, yaxios.put, yaxios.patch with data */
+    Yaxios.prototype[method] = function (url, data, config) {
         return this.request(utils.merge(config || {}, {
             method: method,
             url: url,
@@ -82,14 +82,14 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 });
 ```
 
-### What does `Axios.prototype.request` actually do?
+### What does `Yaxios.prototype.request` actually do?
 Below is the actual implementation of the request method.
 ```javascript
-Axios.prototype.request = function request(config) {
+Yaxios.prototype.request = function request(config) {
     /*eslint no-param-reassign:0*/
-    // Allow for axios('example/url'[, config]) a la fetch API
+    // Allow for yaxios('example/url'[, config]) a la fetch API
     /**
-     * axios('http://www.baidu.com', {header:{}})
+     * yaxios('http://www.baidu.com', {header:{}})
      */
     if (typeof config === 'string') {
         config = arguments[1] || {};

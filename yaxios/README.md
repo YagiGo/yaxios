@@ -264,3 +264,88 @@ by transformResponse, which by default, will jsonify the data if it is string.
         return Promise.reject(reason);
     });
 ```
+
+### How the interceptors are distributed and executed
+After `dispatchRequest` and undefined are pushed into chain array, yaxios would handle interceptors if there is any.
+When we write interceptors, we would write something like this:
+```javascript
+yaxios.interceptors.request.use((config) => {/*...*/}, (error) => {/*...*/});
+yaxios.interceptors.response.use((config) => {/* ... */}, (error) => {/*...*/});
+```
+We already know that when creating an instance of the yaxios, we initialize interceptors like this 
+```javascript
+    this.interceptors = {
+        request: new InterceptorManager(),
+        response: new InterceptorManager()
+    };
+```
+so there are already request and response keys in the interceptors. As for how to add the interceptors, yaxios uses `use` that 
+is implemented on the prototype of InterceptorManager.
+```javascript
+function InterceptorManager() {
+    //创建一个属性
+    this.handlers = [];
+}
+
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+```
+`use` is quite straightforward, it just pushes interceptor functions and error-handle functions into the handlers, which is 
+just an empty array. There are two handlers, one for request interceptors and one for response interceptors.
+
+That is all InterceptManager does, pushing functions into handlers for later use.
+
+Now we go back to `Yaxios.prototype.request` where the interceptors are actually handled.
+```javascript
+    // 遍历实例对象的请求拦截器,
+    this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+        //将请求拦截器压入数组的最前面
+        chain.unshift(interceptor.fulfilled, interceptor.rejected);
+    });
+
+    this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+        //将相应拦截器压入数组的最尾部
+        chain.push(interceptor.fulfilled, interceptor.rejected);
+    });
+```
+
+The `forEach` is also implemented on the prototype of the `InterceptorManager`. An interceptor has two functions, 
+`fulfilled` and `rejected`, `fulfilled` is the actual interceptor function and `rejected` is the error handle function.
+Note that when we put request interceptors into the chain, we use `unshift` and when we put response interceptors into the chain,
+we use `push`. The effect is that **The request interceptors are inserted in reverse, so the last request interceptor would be executed. But response interceptors
+are inserted in sequence.** If we implement two request interceptors and two response interceptors, as follows:
+```javascript
+yaxios.interceptors.request.use((config) => {/*...*/}, (error) => {/*...*/}); // first req-interceptor
+yaxios.interceptors.request.use((config) => {/*...*/}, (error) => {/*...*/}); // second req-interceptor
+
+yaxios.interceptors.response.use((config) => {/* ... */}, (error) => {/*...*/}); // first res-interceptor
+yaxios.interceptors.response.use((config) => {/* ... */}, (error) => {/*...*/}); // second res-interceptor
+```
+The now chain looks like this:
+```javascript
+const chatin = [
+    two_req_interceptor_fn, two_req_error_handle_fn, 
+    one_req_interceptor_fn, one_req_error_handle_fn,
+    dispatchRequest, undefined,
+    one_res_interceptor_fn, one_res_error_handle_fn,
+    two_res_interceptor_fn, two_res_error_handle_fn
+]
+```
+The chain is handled in pairs in `request`
+```javascript
+    while (chain.length) {
+        // Execute every function in the chaiN
+        // The first to be executed is dispatchRequest, which would decide
+        // whether or not the following get to be executed.
+        promise = promise.then(chain.shift(), chain.shift());
+    }
+```
+The order of function executions is: req-interceptors->dispatchRequest->res-interceptors
+This also explains why the undefined is needed in the chain, the `request` handles functions in pairs. So we need a placeholder as 
+error-handler for dispatchRequest
+

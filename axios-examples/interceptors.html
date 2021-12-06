@@ -17,7 +17,20 @@
     // Add a request interceptor
     axios.interceptors.request.use(function (config) {
         // Do something before request is sent
-        console.log('req interceptors:', config);
+        console.log('req interceptors No.1:', config);
+        // you can alter the config her
+        //e.g
+        config.params = {a: 100}
+        return config;
+    }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+    });
+
+    // Add a request interceptor
+    axios.interceptors.request.use(function (config) {
+        // Do something before request is sent
+        console.log('req interceptors No.2:', config);
         // you can alter the config her
         //e.g
         config.params = {a: 100}
@@ -31,7 +44,22 @@
     axios.interceptors.response.use((response) => {
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
-        console.log('res interceptors:', response);
+        console.log('res interceptors No.1:', response);
+        // you can modify the response here
+        // e.g only return the payload
+        return response.data;
+    }, (error) => {
+        console.log('response interceptor failed')
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
+    });
+
+    // Add a response interceptor
+    axios.interceptors.response.use((response) => {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        console.log('res interceptors No.2:', response);
         // you can modify the response here
         // e.g only return the payload
         return response.data;

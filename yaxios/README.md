@@ -338,14 +338,96 @@ const chatin = [
 ```
 The chain is handled in pairs in `request`
 ```javascript
-    while (chain.length) {
-        // Execute every function in the chaiN
-        // The first to be executed is dispatchRequest, which would decide
-        // whether or not the following get to be executed.
-        promise = promise.then(chain.shift(), chain.shift());
-    }
+while (chain.length) {
+    // Execute every function in the chaiN
+    // The first to be executed is dispatchRequest, which would decide
+    // whether or not the following get to be executed.
+    promise = promise.then(chain.shift(), chain.shift());
+}
 ```
 The order of function executions is: req-interceptors->dispatchRequest->res-interceptors
 This also explains why the undefined is needed in the chain, the `request` handles functions in pairs. So we need a placeholder as 
 error-handler for dispatchRequest
 
+### Now off we go, the cancellation
+Cancellation and its implementation is actually my favorite as it demonstrates the possibility of Promise. The usage of cancellation is that 
+you need to set up a cancellation function in your config
+```javascript
+cancelToken: new axios.CancelToken((c) =>{
+  cancel = c
+})
+```
+And when you want to cancel the request, just call `cancel`, which is the `c` in `axios.CancelToken`. So now we go to CancelToken.
+```javascript
+function CancelToken(executor) {
+    // The executor is the the (c) => {cancel=c;}, which must be a function
+    if (typeof executor !== 'function') {
+        throw new TypeError('executor must be a function.');
+    }
+
+    //resolvePromise is just a resolve handler, when executed, the promise will become fulfilled from pending.
+    var resolvePromise; //  resolvePromise()
+    
+    // now the resolvePromise is officially connected with resolve
+    this.promise = new Promise(function promiseExecutor(resolve) {
+        resolvePromise = resolve;
+    });
+    // token 指向当前的实例对象
+    var token = this;
+    //as mentioned, (c)=>{cancel = c;} is the executor, so c is the function down below, which is then handed to cancel.
+    executor(function cancel(message) {
+        if (token.reason) {
+            // Cancellation has already been requested
+            return;
+        }
+
+        token.reason = new Cancel(message);
+        resolvePromise(token.reason);
+    });
+}
+```
+The flow is that in `cancelToken`, we wrote a function `(c) => {cancel = c;}` and hand it to `CancelToken` as the executor.
+`CancelToken` create a promise that is in `pending` state and put it in the `c` part of the executor, note that the promise can only be 
+fulfilled when the `c` is called. In other world, when `cancel` is called, which is exactly what we did when clicking the button
+```javascript
+    btns[1].onclick = () => {
+      cancel();
+    }
+```
+`cancel` is called -> the promise is resolved so the promise is fulfilled.
+
+But you may ask, OK, this is good and all, but how can this stop the request, it is not like it aborts the XHR or something, and you are 
+totally right! To see how it stops the request, we need go to the XHR adapter.
+```javascript
+//如果配置了 cancelToken 则调用 then 方法设置成功的回调
+if (config.cancelToken) {
+    // Handle cancellation
+    config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+            return;
+        }
+        //取消请求
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+    });
+}
+```
+As you can see here, this part of the code is called only when we set up the cancelToken in the config. As mentioned above, when calling `cancel`,
+`resolvePromise` is called therefore, the promise is resolve. This promise can be accessed via the promise as it is bind to the instance.
+So this part can be called and run 
+```javascript
+function onCanceled(cancel) {
+        if (!request) {
+            return;
+        }
+        //取消请求
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+    }
+```
+And wool! request is aborted! The beauty of this implementation is that the request will not abort if you don't resolve the promise as it is on the pending
+state, therefore the promise chain can not go on and as a result, the resolve function will not run.

@@ -3,9 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Tutorial Test</title>
-    <script src="interceptors.js"></script>
+    <script src="yaxios.js"></script>
+    <link crossorigin="anonymous" href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<p>Import the file and test!</p>
+    <div>
+        <button class="btn btn-primary">Send Request</button>
+        <button class="btn btn-warning">Cancel Request</button>
+    </div>
+
+    <script>
+        const btns = document.getElementsByClassName('btn');
+        const yaxios = createInstance({
+            method: 'GET',
+            url: "http://localhost:3000/posts",
+            cancelToken: new CancelToken((c) => {cancel = c;})
+        });
+
+        btns[0].onclick = () => {
+            yaxios.request({
+                method: 'GET',
+                url: "http://localhost:3000/posts",
+                cancelToken: new CancelToken((c) => {cancel = c;})
+            }).then((res) => {console.log(res.data)})
+        }
+
+        btns[1].onclick = () => {
+            cancel('Cancel the request');
+        }
+    </script>
 </body>
 </html>

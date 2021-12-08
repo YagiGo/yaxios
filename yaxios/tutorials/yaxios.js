@@ -63,13 +63,13 @@ const xhrAdapter = (config) => {
         xhr.open(config.method, config.url);
 
         // now we implement the cancellation
-        if(config.tokenCancel) {
-            config.tokenCancel.promise.then((msg) => {
+        if(config.cancelToken) {
+            config.cancelToken.promise.then((msg) => {
+                if(!xhr) return;
                 xhr.abort();
+                xhr = null;
             })
         }
-
-        xhr.send();
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -88,6 +88,7 @@ const xhrAdapter = (config) => {
                 }
             }
         }
+        xhr.send();
     })
 }
 
